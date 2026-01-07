@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Retro Arcade Hub</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+        
+        body {
+            background-color: #0f172a;
+            color: #f8fafc;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            touch-action: none;
+            overflow: hidden;
+            user-select: none;
+        }
+
+        .arcade-font {
+            font-family: 'Press+Start+2P', cursive;
+        }
+
+        .game-canvas {
+            image-rendering: pixelated;
+            background: #000;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5), 0 0 40px rgba(59, 130, 246, 0.2);
+            border: 4px solid #1e293b;
+            border-radius: 8px;
+            max-width: 100%;
+            height: auto;
+        }
+
+        .gradient-border {
+            position: relative;
+            background: #1e293b;
+            padding: 2px;
+            border-radius: 1rem;
+            transition: transform 0.2s;
+        }
+
+        .gradient-border:hover {
+            transform: scale(1.02);
+            background: linear-gradient(45deg, #3b82f6, #8b5cf6, #ec4899);
+        }
+
+        .sensor-active {
+            border: 2px solid #22c55e;
+            box-shadow: 0 0 10px #22c55e;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col items-center justify-center p-4">
+
+    <!-- Header -->
+    <header id="header" class="mb-4 text-center">
+        <h1 class="text-4xl md:text-5xl font-bold mb-1 text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500">
+            ARCADE HUB
+        </h1>
+        <p class="text-slate-400 text-sm">Motion-ready • Touch-optimized • Eleven Games</p>
+    </header>
+
+    <!-- Game Selection Menu -->
+    <div id="menu" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3 w-full max-w-7xl overflow-y-auto max-h-[75vh] p-2">
+        <div onclick="startGame('snake')" class="gradient-border cursor-pointer group">
+            <div class="bg-slate-900 p-3 rounded-[calc(1rem-2px)] h-full flex flex-col items-center text-center">
+                <i class="fas fa-snake text-xl text-green-500 mb-2"></i>
+                <h3 class="text-xs font-bold uppercase">Snake</h3>
+            </div>
+        </div>
+        <div onclick="startGame('pong')" class="gradient-border cursor-pointer group">
+            <div class="bg-slate-900 p-3 rounded-[calc(1rem-2px)] h-full flex flex-col items-center text-center">
+                <i class="fas fa-table-tennis-paddle-ball text-xl text-blue-500 mb-2"></i>
+                <h3 class="text-xs font-bold uppercase">Pong</h3>
+            </div>
+        </div>
+        <div onclick="startGame('bricks')" class="gradient-border cursor-pointer group">
+            <div class="bg-slate-900 p-3 rounded-[calc(1rem-2px)] h-full flex flex-col items-center text-center">
+                <i class="fas fa-border-all text-xl text-red-500 mb-2"></i>
+                <h3 class="text-xs font-bold uppercase">Bricks</h3>
+            </div>
+        </div>
+        <div onclick="startGame('zip')" class="gradient-border cursor-pointer group">
+            <div class="bg-slate-900 p-3 rounded-[calc(1rem-2px)] h-full flex flex-col items-center text-center">
+                <i class="fas fa-bolt text-xl text-yellow-500 mb-2"></i>
+                <h3 class="text-xs font-bold uppercase">Zip</h3>
+            </div>
+        </div>
+        <div onclick="startGame('jump')" class="gradient-border cursor-pointer group">
+            <div class="bg-slate-900 p-3 rounded-[calc(1rem-2px)] h-full flex flex-col items-center text-center">
+                <i class="fas fa-dove text-xl text-cyan-400 mb-2"></i>
+                <h3 class="text-xs font-bold uppercase">Jump</h3>
+            </div>
+        </div>
+        <div onclick="startGame('mine')" class="gradient-border cursor-pointer group">
+            <div class="bg-slate-900 p-3 rounded-[calc(1rem-2px)] h-full flex flex-col items-center text-center">
+                <i class="fas fa-land-mine-on text-xl text-purple-400 mb-2"></i>
+                <h3 class="text-xs font-bold uppercase">Mine</h3>
+            </div>
+        </div>
+        <div onclick="startGame('defender')" class="gradient-border cursor-pointer group">
+            <div class="bg-slate-900 p-3 rounded-[calc(1rem-2px)] h-full flex flex-col items-center text-center">
+                <i class="fas fa-rocket text-xl text-orange-400 mb-2"></i>
+                <h3 class="text-xs font-bold uppercase">Defender</h3>
+            </div>
+        </div>
+        <div onclick="startGame('meteor')" class="gradient-border cursor-pointer group">
+            <div class="bg-slate-900 p-3 rounded-[calc(1rem-2px)] h-full flex flex-col items-center text-center">
+                <i class="fas fa-meteor text-xl text-rose-400 mb-2"></i>
+                <h3 class="text-xs font-bold uppercase">Meteor</h3>
+            </div>
+        </div>
+        <div onclick="startGame('gravity')" class="gradient-border cursor-pointer group">
+            <div class="bg-slate-900 p-3 rounded-[calc(1rem-2px)] h-full flex flex-col items-center text-center">
+                <i class="fas fa-arrows-up-down text-xl text-white mb-2"></i>
+                <h3 class="text-xs font-bold uppercase">Flip</h3>
+            </div>
+        </div>
+        <div onclick="startGame('racer')" class="gradient-border cursor-pointer group">
+            <div class="bg-slate-900 p-3 rounded-[calc(1rem-2px)] h-full flex flex-col items-center text-center">
+                <i class="fas fa-car-burst text-xl text-fuchsia-400 mb-2"></i>
+                <h3 class="text-xs font-bold uppercase">Racer</h3>
+            </div>
+        </div>
+        <!-- NEW GAME: TURBO CIRCUIT -->
+        <div onclick="startGame('circuit')" class="gradient-border cursor-pointer group border-emerald-500/50 border">
+            <div class="bg-slate-900 p-3 rounded-[calc(1rem-2px)] h-full flex flex-col items-center text-center">
+                <i class="fas fa-road text-xl text-emerald-400 mb-2"></i>
+                <h3 class="text-xs font-bold uppercase">Circuit</h3>
+            </div>
+        </div>
+    </div>
+
+    <!-- Game UI -->
+    <div id="gameContainer" class="hidden flex-col items-center w-full max-w-2xl">
+        <div class="w-full flex justify-between items-center mb-2 px-2">
+            <button onclick="showMenu()" class="text-slate-400 hover:text-white transition-colors flex items-center gap-1 text-sm">
+                <i class="fas fa-arrow-left"></i> Menu
+            </button>
+            <div class="flex gap-4">
+                <button id="motionBtn" onclick="toggleMotion()" class="text-xs text-slate-500 px-2 py-1 rounded border border-slate-700">
+                    <i class="fas fa-mobile-screen"></i> Motion Off
+                </button>
+                <div id="scoreDisplay" class="text-lg font-bold text-blue-400">SCORE: 0</div>
+            </div>
+        </div>
+
+        <div class="relative w-full aspect-square md:aspect-video flex items-center justify-center">
+            <canvas id="mainCanvas" class="game-canvas"></canvas>
+            
+            <div id="gameOverlay" class="absolute inset-0 bg-black/80 flex flex-col items-center justify-center hidden rounded-lg z-10 p-6 text-center">
+                <h2 id="overlayTitle" class="text-3xl font-bold mb-2 text-white">GAME OVER</h2>
+                <p id="overlayMessage" class="text-slate-300 mb-4">Final Score: 0</p>
+                <button onclick="restartGame()" class="bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-6 rounded-full transition-colors">
+                    Play Again
+                </button>
+            </div>
+        </div>
+
+        <div id="mobileControls" class="grid grid-cols-3 gap-2 mt-4 w-full max-w-[280px]">
+            <div></div>
+            <button class="bg-slate-800 p-4 rounded-lg active:scale-95 transition-transform" id="btn-up"><i class="fas fa-chevron-up"></i></button>
+            <div></div>
+            <button class="bg-slate-800 p-4 rounded-lg active:scale-95 transition-transform" id="btn-left"><i class="fas fa-chevron-left"></i></button>
+            <button class="bg-slate-800 p-4 rounded-lg active:scale-95 transition-transform" id="btn-down"><i class="fas fa-chevron-down"></i></button>
+            <button class="bg-slate-800 p-4 rounded-lg active:scale-95 transition-transform" id="btn-right"><i class="fas fa-chevron-right"></i></button>
+        </div>
+        
+        <p class="mt-2 text-slate-500 text-[10px] text-center" id="game-instructions"></p>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('mainCanvas');
+        const ctx = canvas.getContext('2d');
+        const scoreDisplay = document.getElementById('scoreDisplay');
+        const overlay = document.getElementById('gameOverlay');
+        const overlayTitle = document.getElementById('overlayTitle');
+        const overlayMessage = document.getElementById('overlayMessage');
+        const menu = document.getElementById('menu');
+        const header = document.getElementById('header');
+        const gameContainer = document.getElementById('gameContainer');
+        const instructions = document.getElementById('game-instructions');
+        const motionBtn = document.getElementById('motionBtn');
+
+        let currentGame = null;
+        let gameLoop = null;
+        let score = 0;
+        let gameState = 'STOPPED';
+        let motionEnabled = false;
+        let tiltX = 0, tiltY = 0;
+
+        function resizeCanvas() {
+            const container = gameContainer.getBoundingClientRect();
+            const width = Math.min(container.width, 600);
+            const height = width * 0.75; 
+            canvas.width = width;
+            canvas.height = height;
+        }
+
+        window.addEventListener('resize', () => { if (gameState !== 'STOPPED') resizeCanvas(); });
+
+        function toggleMotion() {
+            if (typeof DeviceOrientationEvent.requestPermission === 'function') {
+                DeviceOrientationEvent.requestPermission()
+                    .then(permissionState => {
+                        if (permissionState === 'granted') enableMotion();
+                    })
+                    .catch(console.error);
+            } else enableMotion();
+        }
+
+        function enableMotion() {
+            motionEnabled = !motionEnabled;
+            motionBtn.innerHTML = motionEnabled ? '<i class="fas fa-mobile-screen"></i> Motion ON' : '<i class="fas fa-mobile-screen"></i> Motion OFF';
+            motionBtn.className = motionEnabled ? 'text-xs text-green-400 px-2 py-1 rounded border border-green-700 sensor-active' : 'text-xs text-slate-500 px-2 py-1 rounded border border-slate-700';
+            if (motionEnabled) window.addEventListener('deviceorientation', handleOrientation);
+            else { window.removeEventListener('deviceorientation', handleOrientation); tiltX = 0; tiltY = 0; }
+        }
+
+        function handleOrientation(event) {
+            tiltX = Math.max(-1, Math.min(1, event.gamma / 30));
+            tiltY = Math.max(-1, Math.min(1, (event.beta - 45) / 30));
+        }
+
+        let isMouseDown = false;
+        let mouseX = 0, mouseY = 0;
+        let keys = {};
+
+        const updateMousePos = (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+            mouseX = (clientX - rect.left) * (canvas.width / rect.width);
+            mouseY = (clientY - rect.top) * (canvas.height / rect.height);
+        };
+
+        const onAction = () => { if(currentGame?.onAction) currentGame.onAction(); };
+
+        canvas.addEventListener('mousedown', e => { isMouseDown = true; updateMousePos(e); onAction(); });
+        canvas.addEventListener('mousemove', e => { updateMousePos(e); });
+        window.addEventListener('mouseup', () => { isMouseDown = false; });
+        canvas.addEventListener('touchstart', e => { e.preventDefault(); isMouseDown = true; updateMousePos(e); onAction(); }, {passive: false});
+        canvas.addEventListener('touchmove', e => { e.preventDefault(); updateMousePos(e); }, {passive: false});
+        canvas.addEventListener('touchend', () => { isMouseDown = false; });
+        window.addEventListener('keydown', e => keys[e.code] = true);
+        window.addEventListener('keyup', e => keys[e.code] = false);
+
+        const Games = {
+            snake: {
+                instructions: "Swipe or use Arrows to eat and grow.",
+                init() { this.gridSize = 20; this.snake = [{x: 10, y: 10}]; this.dx = 1; this.dy = 0; this.nextDx = 1; this.nextDy = 0; this.speed = 130; this.lastTick = 0; this.spawnFood(); },
+                spawnFood() { const cols = Math.floor(canvas.width / this.gridSize); const rows = Math.floor(canvas.height / this.gridSize); this.food = { x: Math.floor(Math.random() * cols), y: Math.floor(Math.random() * rows) }; },
+                update(time) {
+                    if (time - this.lastTick < this.speed) return;
+                    this.lastTick = time;
+                    if (motionEnabled) { if (Math.abs(tiltX) > 0.5) { this.nextDx = tiltX > 0 ? 1 : -1; this.nextDy = 0; } else if (Math.abs(tiltY) > 0.5) { this.nextDy = tiltY > 0 ? 1 : -1; this.nextDx = 0; } }
+                    this.dx = this.nextDx; this.dy = this.nextDy;
+                    const head = {x: this.snake[0].x + this.dx, y: this.snake[0].y + this.dy};
+                    const cols = Math.floor(canvas.width / this.gridSize); const rows = Math.floor(canvas.height / this.gridSize);
+                    if (head.x < 0 || head.x >= cols || head.y < 0 || head.y >= rows || this.snake.some(s => s.x === head.x && s.y === head.y)) return endGame();
+                    this.snake.unshift(head); if (head.x === this.food.x && head.y === this.food.y) { score += 10; updateScore(); this.spawnFood(); } else this.snake.pop();
+                    if ((keys['ArrowUp'] || keys['KeyW']) && this.dy === 0) { this.nextDx = 0; this.nextDy = -1; }
+                    if ((keys['ArrowDown'] || keys['KeyS']) && this.dy === 0) { this.nextDx = 0; this.nextDy = 1; }
+                    if ((keys['ArrowLeft'] || keys['KeyA']) && this.dx === 0) { this.nextDx = -1; this.nextDy = 0; }
+                    if ((keys['ArrowRight'] || keys['KeyD']) && this.dx === 0) { this.nextDx = 1; this.nextDy = 0; }
+                },
+                draw() { ctx.fillStyle = '#000'; ctx.fillRect(0, 0, canvas.width, canvas.height); ctx.fillStyle = '#ef4444'; ctx.fillRect(this.food.x * this.gridSize, this.food.y * this.gridSize, this.gridSize - 2, this.gridSize - 2); this.snake.forEach((s, i) => { ctx.fillStyle = i === 0 ? '#4ade80' : '#166534'; ctx.fillRect(s.x * this.gridSize, s.y * this.gridSize, this.gridSize - 2, this.gridSize - 2); }); },
+                mobileInput(dir) { if (dir === 'up' && this.dy === 0) { this.nextDx = 0; this.nextDy = -1; } if (dir === 'down' && this.dy === 0) { this.nextDx = 0; this.nextDy = 1; } if (dir === 'left' && this.dx === 0) { this.nextDx = -1; this.nextDy = 0; } if (dir === 'right' && this.dx === 0) { this.nextDx = 1; this.nextDy = 0; } }
+            },
+            pong: {
+                instructions: "Hit the ball. Tilt or use Buttons to move paddle.",
+                init() { this.paddleW = 10; this.paddleH = 80; this.p1 = { y: canvas.height/2 - 40, score: 0 }; this.p2 = { y: canvas.height/2 - 40, score: 0 }; this.ball = { x: canvas.width/2, y: canvas.height/2, dx: 3.5, dy: 3.5, r: 6 }; },
+                update() {
+                    if (keys['ArrowUp'] || keys['KeyW']) this.p1.y -= 6; if (keys['ArrowDown'] || keys['KeyS']) this.p1.y += 6;
+                    if (motionEnabled) this.p1.y += tiltY * 10;
+                    this.p1.y = Math.max(0, Math.min(canvas.height - this.paddleH, this.p1.y));
+                    const aiSpeed = 3.2; if (this.ball.y > this.p2.y + this.paddleH/2) this.p2.y += aiSpeed; else this.p2.y -= aiSpeed;
+                    this.ball.x += this.ball.dx; this.ball.y += this.ball.dy;
+                    if (this.ball.y <= 0 || this.ball.y >= canvas.height) this.ball.dy *= -1;
+                    if (this.ball.x < this.paddleW + this.ball.r) { if (this.ball.y > this.p1.y && this.ball.y < this.p1.y + this.paddleH) { this.ball.dx *= -1.05; this.ball.x = this.paddleW + this.ball.r; } else if (this.ball.x < 0) { this.p2.score++; this.reset(); } }
+                    if (this.ball.x > canvas.width - this.paddleW - this.ball.r) { if (this.ball.y > this.p2.y && this.ball.y < this.p2.y + this.paddleH) { this.ball.dx *= -1.05; this.ball.x = canvas.width - this.paddleW - this.ball.r; } else if (this.ball.x > canvas.width) { this.p1.score++; score = this.p1.score; updateScore(); this.reset(); } }
+                    if (this.p1.score >= 5) endGame("WIN!"); if (this.p2.score >= 5) endGame("LOSE");
+                },
+                reset() { this.ball.x = canvas.width/2; this.ball.y = canvas.height/2; this.ball.dx = (Math.random() > 0.5 ? 3.5 : -3.5); this.ball.dy = (Math.random()*6)-3; },
+                draw() { ctx.fillStyle = '#000'; ctx.fillRect(0, 0, canvas.width, canvas.height); ctx.fillStyle = '#3b82f6'; ctx.fillRect(0, this.p1.y, this.paddleW, this.paddleH); ctx.fillStyle = '#ef4444'; ctx.fillRect(canvas.width-this.paddleW, this.p2.y, this.paddleW, this.paddleH); ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(this.ball.x, this.ball.y, this.ball.r, 0, Math.PI*2); ctx.fill(); },
+                mobileInput(dir) { if (dir === 'up') this.p1.y -= 40; if (dir === 'down') this.p1.y += 40; }
+            },
+            bricks: {
+                instructions: "Smash blocks. Tilt or use Buttons to slide.",
+                init() { this.paddleW = 80; this.paddleH = 12; this.paddleX = (canvas.width - this.paddleW) / 2; this.ball = { x: canvas.width/2, y: canvas.height - 30, dx: 3, dy: -3, r: 6 }; this.rows = 4; this.cols = 8; this.bricks = []; for(let c=0; c<this.cols; c++) { this.bricks[c] = []; for(let r=0; r<this.rows; r++) this.bricks[c][r] = { status: 1 }; } },
+                update() {
+                    if (keys['ArrowLeft'] || keys['KeyA']) this.paddleX -= 7; if (keys['ArrowRight'] || keys['KeyD']) this.paddleX += 7;
+                    if (motionEnabled) this.paddleX += tiltX * 12;
+                    this.paddleX = Math.max(0, Math.min(canvas.width - this.paddleW, this.paddleX));
+                    this.ball.x += this.ball.dx; this.ball.y += this.ball.dy;
+                    if (this.ball.x + this.ball.dx > canvas.width - this.ball.r || this.ball.x + this.ball.dx < this.ball.r) this.ball.dx = -this.ball.dx;
+                    if (this.ball.y + this.ball.dy < this.ball.r) this.ball.dy = -this.ball.dy;
+                    if (this.ball.y + this.ball.dy > canvas.height - this.paddleH - this.ball.r) { if (this.ball.x > this.paddleX && this.ball.x < this.paddleX + this.paddleW) { this.ball.dy = -3.2; } else if (this.ball.y > canvas.height) return endGame(); }
+                    const bW = (canvas.width - 20) / this.cols; const bH = 20;
+                    for(let c=0; c<this.cols; c++) for(let r=0; r<this.rows; r++) { let b = this.bricks[c][r]; if(b.status === 1) { let bx = (c * bW) + 10; let by = (r * bH) + 40; if(this.ball.x > bx && this.ball.x < bx + bW && this.ball.y > by && this.ball.y < by + bH) { this.ball.dy = -this.ball.dy; b.status = 0; score += 100; updateScore(); } } }
+                },
+                draw() { ctx.fillStyle = '#000'; ctx.fillRect(0, 0, canvas.width, canvas.height); const bW = (canvas.width - 20) / this.cols; const bH = 20; for(let c=0; c<this.cols; c++) for(let r=0; r<this.rows; r++) if(this.bricks[c][r].status === 1) { ctx.fillStyle = ['#ef4444', '#f59e0b', '#22c55e', '#3b82f6'][r]; ctx.fillRect((c*bW)+11, (r*bH)+41, bW-2, bH-2); } ctx.fillStyle = '#fff'; ctx.fillRect(this.paddleX, canvas.height - this.paddleH, this.paddleW, this.paddleH); ctx.beginPath(); ctx.arc(this.ball.x, this.ball.y, this.ball.r, 0, Math.PI*2); ctx.fill(); },
+                mobileInput(dir) { if (dir === 'left') this.paddleX -= 50; if (dir === 'right') this.paddleX += 50; }
+            },
+            zip: {
+                instructions: "Absolute: 10x10. Connect colors without crossing paths.",
+                init() { this.gridSize = 10; this.completed = new Set(); this.paths = {}; this.currentPath = null; this.gen(); },
+                gen() {
+                    const colors = ['#ef4444', '#3b82f6', '#22c55e', '#f59e0b', '#8b5cf6', '#06b6d4', '#ec4899', '#ffffff'];
+                    this.nodes = []; let grid = Array(10).fill().map(() => Array(10).fill(null));
+                    for (let i = 0; i < colors.length; i++) {
+                        let found = false;
+                        while (!found) {
+                            let sx = Math.floor(Math.random()*10), sy = Math.floor(Math.random()*10);
+                            let ex = Math.floor(Math.random()*10), ey = Math.floor(Math.random()*10);
+                            if (grid[sx][sy] === null && grid[ex][ey] === null && (Math.abs(sx-ex)+Math.abs(sy-ey) > 4)) {
+                                grid[sx][sy] = i+1; grid[ex][ey] = i+1;
+                                this.nodes.push({x: sx, y: sy, color: colors[i], id: i+1}, {x: ex, y: ey, color: colors[i], id: i+1});
+                                found = true;
+                            }
+                        }
+                    }
+                },
+                onMouseDown() {
+                    const rect = canvas.getBoundingClientRect(); const cellSize = Math.min(canvas.width, canvas.height) / 11;
+                    const x = Math.floor((mouseX - (canvas.width - 10*cellSize)/2) / cellSize);
+                    const y = Math.floor((mouseY - (canvas.height - 10*cellSize)/2) / cellSize);
+                    const n = this.nodes.find(node => node.x === x && node.y === y);
+                    if (n) { this.currentPath = { id: n.id, col: n.color, pts: [{x, y}] }; delete this.paths[n.id]; this.completed.delete(n.id); }
+                },
+                onMouseMove() {
+                    if (!this.currentPath) return; const cellSize = Math.min(canvas.width, canvas.height) / 11;
+                    const x = Math.floor((mouseX - (canvas.width - 10*cellSize)/2) / cellSize);
+                    const y = Math.floor((mouseY - (canvas.height - 10*cellSize)/2) / cellSize);
+                    const last = this.currentPath.pts[this.currentPath.pts.length - 1];
+                    if (x >= 0 && x < 10 && y >= 0 && y < 10 && (x !== last.x || y !== last.y)) {
+                        if (Math.abs(x - last.x) + Math.abs(y - last.y) === 1) {
+                            this.currentPath.pts.push({x, y});
+                            const target = this.nodes.find(n => n.x === x && n.y === y && n.id === this.currentPath.id && (x !== this.currentPath.pts[0].x || y !== this.currentPath.pts[0].y));
+                            if (target) { this.paths[this.currentPath.id] = [...this.currentPath.pts]; this.completed.add(this.currentPath.id); this.currentPath = null; score += 500; updateScore(); if(this.completed.size === 8) endGame("ASCENSION!"); }
+                        }
+                    }
+                },
+                onMouseUp() { this.currentPath = null; },
+                update() {},
+                draw() {
+                    ctx.fillStyle = '#050505'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+                    const cellSize = Math.min(canvas.width, canvas.height) / 11;
+                    const ox = (canvas.width - 10*cellSize)/2, oy = (canvas.height - 10*cellSize)/2;
+                    ctx.strokeStyle = '#111'; for(let i=0; i<=10; i++) { ctx.beginPath(); ctx.moveTo(ox+i*cellSize, oy); ctx.lineTo(ox+i*cellSize, oy+10*cellSize); ctx.stroke(); ctx.beginPath(); ctx.moveTo(ox, oy+i*cellSize); ctx.lineTo(ox+10*cellSize, oy+i*cellSize); ctx.stroke(); }
+                    const dP = (p, c) => { if(!p) return; ctx.strokeStyle = c; ctx.lineWidth = cellSize*0.4; ctx.lineCap = 'round'; ctx.beginPath(); ctx.moveTo(ox+p[0].x*cellSize+cellSize/2, oy+p[0].y*cellSize+cellSize/2); p.forEach(pt => ctx.lineTo(ox+pt.x*cellSize+cellSize/2, oy+pt.y*cellSize+cellSize/2)); ctx.stroke(); };
+                    Object.keys(this.paths).forEach(id => dP(this.paths[id], this.nodes.find(n=>n.id==id).color));
+                    if(this.currentPath) dP(this.currentPath.pts, this.currentPath.col);
+                    this.nodes.forEach(n => { ctx.fillStyle = n.color; ctx.beginPath(); ctx.arc(ox+n.x*cellSize+cellSize/2, oy+n.y*cellSize+cellSize/2, cellSize*0.35, 0, Math.PI*2); ctx.fill(); ctx.strokeStyle = '#fff'; ctx.stroke(); });
+                }
+            },
+            jump: {
+                instructions: "Flap through pipes. Tap, Space, or Up to jump.",
+                init() { this.bird = { x: 100, y: canvas.height/2, v: 0, r: 12 }; this.pipes = []; this.timer = 0; },
+                update() {
+                    this.bird.v += 0.4; this.bird.y += this.bird.v;
+                    if (keys['Space'] || keys['ArrowUp'] || keys['KeyW']) { this.bird.v = -7; keys['Space'] = false; }
+                    if (this.bird.y < 0 || this.bird.y > canvas.height) return endGame();
+                    if (++this.timer > 100) { let gap = 180, h = 50 + Math.random()*(canvas.height-gap-100); this.pipes.push({ x: canvas.width, top: h, gap }); this.timer = 0; }
+                    this.pipes.forEach(p => { p.x -= 2.5; if (this.bird.x+this.bird.r > p.x && this.bird.x-this.bird.r < p.x+60) { if (this.bird.y-this.bird.r < p.top || this.bird.y+this.bird.r > p.top+p.gap) return endGame(); } if (p.x+60 < this.bird.x && !p.passed) { p.passed = true; score++; updateScore(); } });
+                    this.pipes = this.pipes.filter(p => p.x > -60);
+                },
+                draw() { ctx.fillStyle = '#0ea5e9'; ctx.fillRect(0, 0, canvas.width, canvas.height); ctx.fillStyle = '#facc15'; ctx.beginPath(); ctx.arc(this.bird.x, this.bird.y, this.bird.r, 0, Math.PI*2); ctx.fill(); ctx.fillStyle = '#22c55e'; this.pipes.forEach(p => { ctx.fillRect(p.x, 0, 60, p.top); ctx.fillRect(p.x, p.top+p.gap, 60, canvas.height); }); },
+                onAction() { this.bird.v = -7; }
+            },
+            mine: {
+                instructions: "Clear tiles without hitting mines. Numbers show counts.",
+                init() { this.cols = 10; this.rows = 8; this.grid = []; this.rev = 0; this.gen(); },
+                gen() { for(let r=0; r<8; r++) { this.grid[r] = []; for(let c=0; c<10; c++) this.grid[r][c] = { m: Math.random()<0.15, r: false, c: 0 }; } for(let r=0; r<8; r++) for(let c=0; c<10; c++) { if (this.grid[r][c].m) continue; let ct = 0; for(let dr=-1; dr<=1; dr++) for(let dc=-1; dc<=1; dc++) { let nr=r+dr, nc=c+dc; if(nr>=0&&nr<8&&nc>=0&&nc<10&&this.grid[nr][nc].m) ct++; } this.grid[r][c].c = ct; } },
+                reveal(r, c) { if (r<0||r>=8||c<0||c>=10||this.grid[r][c].r) return; this.grid[r][c].r = true; this.rev++; if (this.grid[r][c].m) return endGame("BOOM"); if (this.grid[r][c].c === 0) { for(let dr=-1; dr<=1; dr++) for(let dc=-1; dc<=1; dc++) this.reveal(r+dr, c+dc); } score = this.rev*10; updateScore(); },
+                onMouseDown() { let cS = canvas.width/10; this.reveal(Math.floor(mouseY/cS), Math.floor(mouseX/cS)); },
+                update() {},
+                draw() { let cS = canvas.width/10; ctx.fillStyle = '#334155'; ctx.fillRect(0,0,canvas.width,canvas.height); for(let r=0; r<8; r++) for(let c=0; c<10; c++) { let cell=this.grid[r][c], x=c*cS, y=r*cS; if(cell.r) { ctx.fillStyle = cell.m ? '#ef4444' : '#1e293b'; ctx.fillRect(x+1, y+1, cS-2, cS-2); if(!cell.m && cell.c>0) { ctx.fillStyle='#fff'; ctx.textAlign='center'; ctx.fillText(cell.c, x+cS/2, y+cS/2+5); } } else { ctx.fillStyle='#475569'; ctx.fillRect(x+1,y+1,cS-2,cS-2); } } }
+            },
+            defender: {
+                instructions: "Shoot invaders. Tilt or use Buttons to move ship.",
+                init() { this.p = { x: canvas.width/2, w: 40 }; this.bullets = []; this.enemies = []; this.t = 0; },
+                update() {
+                    if (keys['ArrowLeft']) this.p.x -= 5; if (keys['ArrowRight']) this.p.x += 5;
+                    if (motionEnabled) this.p.x += tiltX * 10;
+                    this.p.x = Math.max(0, Math.min(canvas.width - this.p.w, this.p.x));
+                    if (keys['Space'] || keys['ArrowUp']) { this.bullets.push({x: this.p.x+20, y: canvas.height-30}); keys['Space'] = false; }
+                    if (++this.t > 50) { this.enemies.push({x: Math.random()*(canvas.width-30), y: -30, v: 1.5+Math.random()*2}); this.t = 0; }
+                    this.bullets.forEach((b, bi) => { b.y -= 6; this.enemies.forEach((e, ei) => { if(b.x > e.x && b.x < e.x+30 && b.y > e.y && b.y < e.y+30) { this.enemies.splice(ei, 1); this.bullets.splice(bi, 1); score += 50; updateScore(); } }); });
+                    this.enemies.forEach(e => { e.y += e.v; if(e.y > canvas.height) return endGame(); });
+                    this.bullets = this.bullets.filter(b => b.y > 0);
+                },
+                draw() { ctx.fillStyle='#000'; ctx.fillRect(0,0,canvas.width,canvas.height); ctx.fillStyle='#3b82f6'; ctx.fillRect(this.p.x, canvas.height-30, 40, 20); ctx.fillStyle='#fff'; this.bullets.forEach(b => ctx.fillRect(b.x-2, b.y-2, 4, 4)); ctx.fillStyle='#ef4444'; this.enemies.forEach(e => ctx.fillRect(e.x, e.y, 30, 30)); },
+                onAction() { this.bullets.push({x: this.p.x+20, y: canvas.height-30}); },
+                mobileInput(dir) { if(dir === 'left') this.p.x -= 30; if(dir === 'right') this.p.x += 30; if(dir === 'up') this.onAction(); }
+            },
+            meteor: {
+                instructions: "Dodge meteors. Tilt or use Buttons to steer.",
+                init() { this.p = { x: canvas.width/2, y: canvas.height/2, r: 10 }; this.meteors = []; this.t = 0; },
+                update() {
+                    if(keys['ArrowLeft']) this.p.x -= 5; if(keys['ArrowRight']) this.p.x += 5; if(keys['ArrowUp']) this.p.y -= 5; if(keys['ArrowDown']) this.p.y += 5;
+                    if(motionEnabled) { this.p.x += tiltX * 8; this.p.y += tiltY * 8; }
+                    this.p.x = Math.max(0, Math.min(canvas.width, this.p.x)); this.p.y = Math.max(0, Math.min(canvas.height, this.p.y));
+                    if(++this.t % 15 === 0) { this.meteors.push({x: Math.random()*canvas.width, y: -20, r: 10+Math.random()*15, v: 2.5+Math.random()*3}); score++; updateScore(); }
+                    this.meteors.forEach(m => { m.y += m.v; if(Math.hypot(this.p.x-m.x, this.p.y-m.y) < this.p.r+m.r) return endGame(); });
+                    this.meteors = this.meteors.filter(m => m.y < canvas.height+30);
+                },
+                draw() { ctx.fillStyle='#0f172a'; ctx.fillRect(0,0,canvas.width,canvas.height); ctx.fillStyle='#fbbf24'; ctx.beginPath(); ctx.arc(this.p.x, this.p.y, this.p.r, 0, Math.PI*2); ctx.fill(); ctx.fillStyle='#4b5563'; this.meteors.forEach(m => { ctx.beginPath(); ctx.arc(m.x, m.y, m.r, 0, Math.PI*2); ctx.fill(); }); },
+                mobileInput(dir) { if(dir === 'left') this.p.x -= 30; if(dir === 'right') this.p.x += 30; if(dir === 'up') this.p.y -= 30; if(dir === 'down') this.p.y += 30; }
+            },
+            gravity: {
+                instructions: "Flip gravity to dodge spikes. Tap or Space.",
+                init() { this.p = { x: 100, y: 100, w: 20, h: 20, v: 0, g: 0.35 }; this.flipped = false; this.obs = []; this.t = 0; },
+                update() {
+                    this.p.v += this.flipped ? -this.p.g : this.p.g; this.p.y += this.p.v;
+                    if (this.p.y < 0 || this.p.y > canvas.height - this.p.h) { this.p.y = Math.max(0, Math.min(canvas.height - this.p.h, this.p.y)); this.p.v = 0; }
+                    if (++this.t > 80) { let type = Math.random() > 0.5 ? 'top' : 'bot'; this.obs.push({ x: canvas.width, w: 40, h: 60 + Math.random()*100, type }); this.t = 0; }
+                    this.obs.forEach(o => { o.x -= 3.5; let hit = false; if (o.type === 'top') { if (this.p.x + this.p.w > o.x && this.p.x < o.x + o.w && this.p.y < o.h) hit = true; } else { if (this.p.x + this.p.w > o.x && this.p.x < o.x + o.w && this.p.y + this.p.h > canvas.height - o.h) hit = true; } if (hit) return endGame(); if (o.x + o.w < this.p.x && !o.passed) { o.passed = true; score += 10; updateScore(); } });
+                    this.obs = this.obs.filter(o => o.x > -100);
+                    if (keys['Space'] || keys['ArrowUp']) this.onAction();
+                },
+                draw() { ctx.fillStyle = '#1e1b4b'; ctx.fillRect(0, 0, canvas.width, canvas.height); ctx.fillStyle = '#6366f1'; ctx.fillRect(this.p.x, this.p.y, this.p.w, this.p.h); ctx.fillStyle = '#f43f5e'; this.obs.forEach(o => { if (o.type === 'top') ctx.fillRect(o.x, 0, o.w, o.h); else ctx.fillRect(o.x, canvas.height - o.h, o.w, o.h); }); },
+                onAction() { this.flipped = !this.flipped; keys['Space'] = false; keys['ArrowUp'] = false; },
+                mobileInput() { this.onAction(); }
+            },
+            racer: {
+                instructions: "Dodge blocks on the road. Tilt or use Buttons.",
+                init() { this.p = { x: canvas.width/2 - 20, w: 40, h: 25 }; this.obs = []; this.t = 0; this.speed = 4; },
+                update() {
+                    if (keys['ArrowLeft']) this.p.x -= 6; if (keys['ArrowRight']) this.p.x += 6;
+                    if (motionEnabled) this.p.x += tiltX * 12;
+                    this.p.x = Math.max(20, Math.min(canvas.width - this.p.w - 20, this.p.x));
+                    if (++this.t > 35) { this.obs.push({ x: 30 + Math.random()*(canvas.width-100), y: -50, w: 40, h: 40, col: '#d946ef' }); this.t = 0; }
+                    this.obs.forEach(o => { o.y += this.speed; if (this.p.x < o.x + o.w && this.p.x + this.p.w > o.x && canvas.height - 80 < o.y + o.h && canvas.height - 80 + this.p.h > o.y) return endGame(); });
+                    this.obs = this.obs.filter(o => o.y < canvas.height); score++; updateScore();
+                },
+                draw() { ctx.fillStyle = '#0f172a'; ctx.fillRect(0, 0, canvas.width, canvas.height); ctx.strokeStyle = '#1e293b'; ctx.lineWidth = 4; ctx.beginPath(); ctx.moveTo(canvas.width/2, 0); ctx.lineTo(canvas.width/2, canvas.height); ctx.stroke(); ctx.fillStyle = '#38bdf8'; ctx.fillRect(this.p.x, canvas.height - 80, this.p.w, this.p.h); this.obs.forEach(o => { ctx.fillStyle = o.col; ctx.fillRect(o.x, o.y, o.w, o.h); ctx.strokeStyle = '#fff'; ctx.strokeRect(o.x, o.y, o.w, o.h); }); },
+                mobileInput(dir) { if (dir === 'left') this.p.x -= 40; if (dir === 'right') this.p.x += 40; }
+            },
+            // GAME 11: TURBO CIRCUIT
+            circuit: {
+                instructions: "Stay on the road! Tilt or use Buttons to steer.",
+                init() {
+                    this.playerX = canvas.width / 2;
+                    this.roadWidth = 220;
+                    this.trackOffset = (canvas.width - this.roadWidth) / 2;
+                    this.curve = 0;
+                    this.targetCurve = 0;
+                    this.speed = 3.5;
+                    this.distance = 0;
+                },
+                update() {
+                    this.distance += this.speed;
+                    score = Math.floor(this.distance / 10);
+                    updateScore();
+                    if (keys['ArrowLeft']) this.playerX -= 6;
+                    if (keys['ArrowRight']) this.playerX += 6;
+                    if (motionEnabled) this.playerX += tiltX * 10;
+                    if (Math.random() < 0.02) this.targetCurve = (Math.random() - 0.5) * 6;
+                    this.curve += (this.targetCurve - this.curve) * 0.04;
+                    this.trackOffset += this.curve;
+                    if (this.trackOffset < 40) { this.trackOffset = 40; this.targetCurve = 2; }
+                    if (this.trackOffset > canvas.width - this.roadWidth - 40) { this.trackOffset = canvas.width - this.roadWidth - 40; this.targetCurve = -2; }
+                    if (this.playerX < this.trackOffset || this.playerX > this.trackOffset + this.roadWidth - 30) return endGame("OFF ROAD!");
+                },
+                draw() {
+                    ctx.fillStyle = '#065f46'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+                    ctx.fillStyle = '#334155'; ctx.fillRect(this.trackOffset, 0, this.roadWidth, canvas.height);
+                    ctx.strokeStyle = '#fff'; ctx.setLineDash([25, 25]); ctx.lineDashOffset = -this.distance % 50;
+                    ctx.beginPath(); ctx.moveTo(this.trackOffset + this.roadWidth / 2, 0); ctx.lineTo(this.trackOffset + this.roadWidth / 2, canvas.height); ctx.stroke();
+                    ctx.setLineDash([]);
+                    ctx.fillStyle = '#ef4444'; ctx.fillRect(this.playerX, canvas.height - 110, 30, 50);
+                    ctx.fillStyle = '#000'; ctx.fillRect(this.playerX - 4, canvas.height - 105, 4, 15); ctx.fillRect(this.playerX + 30, canvas.height - 105, 4, 15);
+                    ctx.fillRect(this.playerX - 4, canvas.height - 75, 4, 15); ctx.fillRect(this.playerX + 30, canvas.height - 75, 4, 15);
+                },
+                mobileInput(dir) { if (dir === 'left') this.playerX -= 40; if (dir === 'right') this.playerX += 40; }
+            }
+        };
+
+        function startGame(gameKey) {
+            header.classList.add('hidden'); menu.classList.add('hidden');
+            gameContainer.classList.remove('hidden'); overlay.classList.add('hidden');
+            score = 0; updateScore(); resizeCanvas();
+            currentGame = Games[gameKey];
+            instructions.innerText = currentGame.instructions || "";
+            currentGame.init(); gameState = 'RUNNING';
+            if (gameLoop) cancelAnimationFrame(gameLoop);
+            function loop(time) { if (gameState === 'RUNNING') { currentGame.update(time); currentGame.draw(); gameLoop = requestAnimationFrame(loop); } }
+            gameLoop = requestAnimationFrame(loop);
+        }
+
+        function restartGame() { startGame(Object.keys(Games).find(k => Games[k] === currentGame)); }
+        function showMenu() { gameState = 'STOPPED'; header.classList.remove('hidden'); menu.classList.remove('hidden'); gameContainer.classList.add('hidden'); cancelAnimationFrame(gameLoop); }
+        function endGame(msg) { gameState = 'GAMEOVER'; overlay.classList.remove('hidden'); overlayTitle.innerText = msg || "GAME OVER"; overlayMessage.innerText = `Final Score: ${score}`; }
+        function updateScore() { scoreDisplay.innerText = `SCORE: ${score}`; }
+
+        const setupMobile = () => { ['up', 'down', 'left', 'right'].forEach(id => { const el = document.getElementById(`btn-${id}`); el.addEventListener('touchstart', (e) => { e.preventDefault(); if (currentGame?.mobileInput && gameState === 'RUNNING') currentGame.mobileInput(id); }); }); };
+        setupMobile();
+    </script>
+</body>
+</html>
